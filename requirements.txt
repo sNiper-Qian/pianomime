@@ -1,0 +1,14 @@
+diffusers==0.11.1
+torch==2.0.1+cu118 
+torchvision==0.15.2+cu118 
+torchaudio==2.0.2 
+--extra-index-url  https://download.pytorch.org/whl/cu118
+zarr==2.16.1
+diffusers==0.11.1
+tyro==0.5.12
+dm_env_wrappers==0.013
+quadprog==0.1.11
+gymnasium==0.29.1
+stable_baselines3==2.1.0
+qpsolvers==4.0.1
+
