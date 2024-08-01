@@ -158,22 +158,13 @@ def move_fingers_to_pos_qp(env: dm_env.Environment,
     # Reset the color of all keys
     # env.physics.bind(env.task.piano._key_geoms).rgba = (0.5, 0.5, 0.5, 1.0)
     for i in range(6):
-        # if hand_action[7][i] != -1:
-        #     env.physics.bind(env.task.piano._key_geoms[int(hand_action[7][i])]).rgba = (0.0, 1.0, 0.0, 1.0)
-            # pos_weights[i-1] = 1.0
         if i == 0:
             if not targeting_wrist:
                 # Don't set target position for the wrist
                 continue
         target_pos = (hand_action[0][i], hand_action[1][i], hand_action[2][i])
-        # target_quat = (hand_action[3][i], hand_action[4][i], hand_action[5][i], hand_action[6][i])
         target_poses.append(target_pos)
-        # target_quats.append(target_quat)
-    # for key in key_indices:
-    #     if key not in hand_action[7]:
-    #         env.physics.bind(env.task.piano._key_geoms[key]).rgba = (1.0, 0.0, 0.0, 1.0)
-        # if key in hand_action[7]:
-        #     env.physics.bind(env.task.piano._key_geoms[key]).rgba = (0.5, 0.5, 0.0, 1.0)
+
     # Wrist, forearm and the dedicated finger joints are available for IK
     if hand_side == 'left':
         wrist_joint_names = [prefix+"lh_WRJ2",
@@ -301,13 +292,9 @@ def move_fingers_to_keys(env: dm_env.Environment,
         target_key = mjcf_utils.safe_find(env.task.piano._mjcf_root, "body", f"{prefix}{key_index}")
         target_pos = target_key.pos
         target_pos = (target_pos[0]+offset_x[i], target_pos[1]+offset_y[i], target_pos[2])
-        # target_key.add("site", type="sphere", pos=(0.1, 0.1, 0.1), rgba=(1, 0, 0, 1))
         key_geom = env.task.piano.keys[key_index].geom[0]
         # Uncomment method _update_key_color
-        # env.physics.bind(key_geom).rgba = (1.0, 1.0, 1.0, 1.0)
         env.physics.bind(env.task.piano._key_geoms[key_index]).rgba = (0.0, 1.0, 0.0, 1.0)
-        # print(key_geom.rgba)
-        # print(mjcf_utils.safe_find_all(env.task.piano._mjcf_root, "site"))
 
         target_poses.append(target_pos)
     # Wrist, forearm and the dedicated finger joints are available for IK
@@ -341,15 +328,6 @@ def move_finger_to_key(env: dm_env.Environment, key_index: int, finger_name):
     # Position of the piano joint as the target position
     target_pos = mjcf_utils.safe_find(env.task.piano._mjcf_root, "body", f"{prefix}{key_index}").pos
 
-    # # For test
-    # target_pos = (0.4, mjcf_utils.safe_find(env.task.piano._mjcf_root, "body", f"{prefix}{key_index}").pos[1], 0.13)
-    # print(target_pos)
-    # print(mjcf_utils.safe_find_all(env.task._hand._mjcf_root, "body"))
-    # print(mjcf_utils.safe_find_all(env.task._hand._mjcf_root, "site"))
-    # print(env.task._hand.root_body.pos) 
-    # print(env.physics.named.data.qpos)
-    # print(env.physics.model.id2name(89, 'joint'))
-
     # Wrist, forearm and the dedicated finger joints are available for IK
     wrist_joint_names = ["lh_shadow_hand/"+"lh_WRJ2",
                             "lh_shadow_hand/"+"lh_WRJ1"]
@@ -363,8 +341,6 @@ def move_finger_to_key(env: dm_env.Environment, key_index: int, finger_name):
                                        site_name="lh_shadow_hand/"+finger_name+"distal_site", 
                                        target_pos=target_pos,
                                        joint_names=joint_names,
-                                    #    joint_names=("lh_shadow_hand/"+env.task._hand.joints[-2].name, 
-                                    #                 "lh_shadow_hand/"+env.task._hand.joints[-1].name),
                                        )
     return ik_result
     

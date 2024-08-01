@@ -35,7 +35,6 @@ if __name__ == '__main__':
 
     obs_dim = 450
     action_dim = 46
-    # seed = sys.argv[1]
     num_songs = 50
     dataset_path = sys.argv[1]
     device = torch.device('cuda')
@@ -154,10 +153,6 @@ if __name__ == '__main__':
                 # Save the EMA model's weights to the specified path
                 torch.save(ema_model_state_dict, ema_model_weights_path)
                 print("Saved checkpoint at epoch {}".format(epoch_idx))
-
-                # midi_encoder_state_dict = midi_encoder.state_dict()
-                # midi_encoder_weights_path = 'diffusion/ckpts/midi_encoder_{}.ckpt'.format(run_name)
-                # torch.save(midi_encoder_state_dict, midi_encoder_weights_path)
             
 
     # Weights of the EMA model

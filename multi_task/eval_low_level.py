@@ -114,9 +114,8 @@ def main() -> None:
         env = get_env_ll(task_name=task_name, enable_ik=False, lookahead = 10, 
                         record_dir=".", use_fingering_emb=False, 
                         use_midi=False)
-        # get first observation
+        
         timestep = env.reset()
-        # obs = get_diffusion_obs(timestep)
         lh_current, rh_current = env.get_fingertip_pos()
 
         step_idx = 0

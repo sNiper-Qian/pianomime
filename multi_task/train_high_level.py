@@ -29,7 +29,6 @@ if __name__ == '__main__':
 
     obs_dim = 212
     action_dim = 36
-    # seed = sys.argv[1]
     num_songs = 50
     dataset_path = sys.argv[1]
     device = torch.device('cuda')

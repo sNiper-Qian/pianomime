@@ -180,19 +180,6 @@ def main(args: Args) -> None:
 
     # Evaluate the trained model
     model = PPO.load("./robopianist_rl/ckpts/{}_best".format(run_name), env=vec_env)
-    os.makedirs("./trained_songs", exist_ok=True)
-    os.makedirs("./trained_songs/{}".format(args.mimic_task), exist_ok=True)
-    left_hand_action_list = np.load(
-    f"dataset/high_level_trajectories/{args.mimic_task}_left_hand_action_list.npy"
-    )
-    right_hand_action_list = np.load(
-    f"dataset/high_level_trajectories/{args.mimic_task}_right_hand_action_list.npy"
-    )
-    np.save("./trained_songs/{}/left_hand_action_list".format(args.mimic_task), left_hand_action_list)
-    np.save("./trained_songs/{}/right_hand_action_list".format(args.mimic_task), right_hand_action_list)
-    # shutil.copy("./handtracking/midis/{}.mid".format(args.mimic_task), "./trained_songs/{}".format(args.mimic_task))
-    shutil.copy("./handtracking/notes/{}.pkl".format(args.mimic_task), "./trained_songs/{}".format(args.mimic_task))
-    # shutil.copy(args.pretrained, "./trained_songs/{}".format(args.mimic_task))
 
     obs, _ = eval_env.reset()
     actions = []
@@ -207,9 +194,7 @@ def main(args: Args) -> None:
     print(f"Total reward: {rewards}")
     print(eval_env.env.latest_filename)
     print(eval_env.env.get_musical_metrics())
-    # play_video(eval_env.env.latest_filename)
     actions = np.array(actions)
-    # np.save("./handtracking/trained/actions_{}".format(args.mimic_task), actions)
     np.save("./trained_songs/{}/actions_{}".format(args.mimic_task, args.mimic_task), actions)
 
     del model # remove to demonstrate saving and loading

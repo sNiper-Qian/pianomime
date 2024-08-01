@@ -181,9 +181,9 @@ if __name__ == '__main__':
                     # naction = naction.detach().to('cpu').numpy().flatten()
 
                     naction = naction.detach().to('cpu').numpy()
-                    # Append 10 dimensions for fingering
+                    # Append 10 dimensions for fingering (not actually used)
                     naction = np.concatenate((naction, np.zeros((1, 4, 10))), axis=2).flatten()
-                    # print(naction.shape)
+                    
                     naction = unnormalize_data(naction, stats['action'])
                     naction = naction.reshape(B, 4, -1)
                     action = naction[0][0]

@@ -51,16 +51,6 @@ class ResidualWrapper(EnvironmentWrapper):
             shape=prior_action.shape, dtype=prior_action.dtype, name='prior_action'
         )
         self._observation_spec['prior_action'] = prior_action_spec
-        # # Add the demo observation.
-        # demo_lh= self._demonstrations_lh[0:self.task._n_steps_lookahead+1].flatten()
-        # demo_rh = self._demonstrations_rh[0:self.task._n_steps_lookahead+1].flatten()
-        # demo = np.concatenate((demo_lh, demo_rh)).flatten()
-        # demo_spec = specs.Array(
-        #     shape=demo.shape, dtype=demo.dtype, name='demo'
-        # )
-        # self._observation_spec['demo'] = demo_spec
-
-        # self._add_end_effector_pos_mimic_reward()
         self._prior_action = None
         self._lh_target = None
         self._rh_target = None
@@ -91,8 +81,6 @@ class ResidualWrapper(EnvironmentWrapper):
             else:
                 raise ValueError("External demo is enabled but no demo is provided.")
         else:
-            # print(self._demonstrations_lh[0])
-            # print(self._demonstrations_rh[0])
             demo_lh = self._demonstrations_lh[self._reference_frame_idx:self._reference_frame_idx+self.task._n_steps_lookahead+1]
             demo_rh = self._demonstrations_rh[self._reference_frame_idx:self._reference_frame_idx+self.task._n_steps_lookahead+1]
             if self._reference_frame_idx + self.task._n_steps_lookahead >= self._demonstrations_length:
@@ -114,9 +102,6 @@ class ResidualWrapper(EnvironmentWrapper):
 
     def _get_prior_action(self) -> np.ndarray:
         if self._external_demo:
-            # print("inner:", self._demonstrations_lh[max(0, self._reference_frame_idx)])
-            # print("outer:", self.current_demo_lh[0])
-            # raise ValueError("External demo is enabled but no demo is provided.")
             if self.current_demo_lh is not None and self.current_demo_rh is not None:
                 qvel_left, lh_dof_indices, self._lh_target = move_fingers_to_pos_qp(self,
                                             self.current_demo_lh[0],
@@ -153,11 +138,6 @@ class ResidualWrapper(EnvironmentWrapper):
         return pos[88:]
 
     def qpos2ctrl(self, qpos):
-        # action = np.zeros(54, dtype=np.float64)
-        # action[0:24] = qpos[3:27]
-        # action[24:27] = qpos[0:3]
-        # action[27:51] = qpos[30:54]
-        # action[51:54] = qpos[27:30]
         # Tendon is estimated by the sum of the two joint angles
         action = np.zeros(46, dtype=np.float64)
         action[0:2] = qpos[3:5]
@@ -190,7 +170,6 @@ class ResidualWrapper(EnvironmentWrapper):
         else:
             action_hand = action[:-1]
         self.non_residual_action = action_hand
-        # self.physics.data.qpos[88:] = action_hand # Apply qpos instead of ctrl. Only sustain pedal is acted in task.before_step().
         action_sustain = action[-1]
         # Merge action_sustain into action_hand 
         action = np.append(action_hand, action_sustain)

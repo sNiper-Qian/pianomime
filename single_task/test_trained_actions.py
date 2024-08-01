@@ -53,7 +53,6 @@ with open('dataset/notes/{}.pkl'.format(task_name), 'rb') as f:
 
 task = piano_with_shadow_hands_res.PianoWithShadowHandsResidual(
     note_trajectory=note_traj,
-    # midi=music.load(task_name),
     change_color_on_activation=True,
     trim_silence=True,
     control_timestep=0.05,
@@ -109,7 +108,7 @@ demos = []
 env = env.env
 timestep = env.reset()
 reward = 0
-# Use tqdm for progress bar
+
 timesteps = tqdm.tqdm(range(actions.shape[0]))
 for step in timesteps:
     action = actions[step]
