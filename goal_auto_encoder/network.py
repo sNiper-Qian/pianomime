@@ -1,3 +1,7 @@
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
 import torch; torch.manual_seed(0)
 import torch.nn as nn
 import torch.nn.functional as F
@@ -5,7 +9,6 @@ import torch.utils
 import torch.distributions
 import numpy as np
 import math
-import vae.transformer
 
 class ConditionalConv1dBlock(nn.Module):
     '''

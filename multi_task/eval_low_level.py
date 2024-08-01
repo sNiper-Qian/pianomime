@@ -28,6 +28,7 @@ from diffusers.optimization import get_scheduler
 from network import ConditionalUnet1D, VariationalConvMlpEncoder, ConvEncoder
 from dataset import normalize_data, read_dataset, unnormalize_data
 from utils import get_diffusion_obs, Args, get_env_ll, get_flattend_obs
+import goal_auto_encoder.network
 
 def play_video(filename: str):
     mp4 = open(filename, "rb").read()
@@ -42,14 +43,14 @@ def play_video(filename: str):
         % data_url
     )
 
-def main(args: Args) -> None:
+def main() -> None:
     pred_horizon = 4
     action_horizon = 4
     obs_horizon = 1
 
     obs_dim = 404
     action_dim = 46
-    task_name = "Hope"
+    task_name = sys.argv[1]
     n_songs = 1
 
     hl_model_num_songs = None
@@ -71,7 +72,7 @@ def main(args: Args) -> None:
     device = torch.device('cuda')
 
     # SDF
-    ae = vae.network.Autoencoder(
+    ae = goal_auto_encoder.network.Autoencoder(
         latent_dim=16,
         cond_dim=64,
         ).to('cuda')
@@ -107,24 +108,11 @@ def main(args: Args) -> None:
     ema_noise_pred_net = noise_pred_net
     ema_noise_pred_net.load_state_dict(state_dict)
 
-    if args.name:
-        run_name = args.name
-    else:
-        run_name = f"DF-{task_name}-{args.seed}-{time.time()}-eval"
-
-    # Create experiment directory.
-    experiment_dir = Path(args.root_dir) / run_name
-    experiment_dir.mkdir(parents=True)
-
     for i in range(1):
-        task_name = "NoTimeToDie_1"
-
-        left_hand_action_list = np.load('dataset/high_level_trajectories/{}_left_hand_action_list.npy'.format(task_name))
-        fingering = np.load('dataset/high_level_trajectories/{}_fingerings.npy'.format(task_name))
+        left_hand_action_list = np.load('pianomime/multi_task/trajectories/{}_left_hand_action_list.npy'.format(task_name))
         max_steps = left_hand_action_list.shape[0] 
         env = get_env_ll(task_name=task_name, enable_ik=False, lookahead = 10, 
-                        record_dir=experiment_dir / "eval", use_fingering_emb=True, 
-                        external_fingering=fingering,
+                        record_dir=".", use_fingering_emb=False, 
                         use_midi=False)
         # get first observation
         timestep = env.reset()
@@ -158,16 +146,14 @@ def main(args: Args) -> None:
         with tqdm(total=max_steps, desc="Eval Env") as pbar:
             while not timestep.last():
                 B = 1
-                # stack the last obs_horizon (2) number of observations
+                # stack the last obs_horizon number of observations
                 nobs = np.stack(obs_deque)
-                # raise Exception
                 # normalize observation
                 nobs = normalize_data(nobs, stats['obs'])
                 # device transfer
                 nobs = torch.from_numpy(nobs).to(device, dtype=torch.float32)
 
                 # infer action
-                # t_start = time.time()
                 with torch.no_grad():
                     # reshape observation to (B,obs_horizon*obs_dim)
                     obs_cond = nobs.unsqueeze(0).flatten(start_dim=1)
@@ -194,13 +180,9 @@ def main(args: Args) -> None:
                             timestep=k,
                             sample=naction
                         ).prev_sample
-                # t_end = time.time()
+
                 # unnormalize action
                 naction = naction.detach().to('cpu').numpy()
-                # naction = naction.reshape(1, 1, 64)
-                # Discard the last 10 dimensions
-                # naction = naction[:,:,:-17]
-                # (B, pred_horizon, action_dim)
 
                 naction = naction[0]
                 action_pred = naction # Unnormalize
@@ -221,7 +203,6 @@ def main(args: Args) -> None:
                     demo_lh = demo_lh[:18]
                     demo_rh = demo_rh[:18]
                     demo = np.concatenate((demo_lh, demo_rh), axis=0).flatten()
-                    # print("Time taken for one step: ", t_end-t_start)
 
                     timestep = env.step(np.append(action[i], 0))
                     if timestep.last():
@@ -239,10 +220,8 @@ def main(args: Args) -> None:
                             concatenate_keys=['goal', 'demo']
                             )
                     obs_deque.append(obs)
-                    # and reward/vis
                     # update progress bar
                     pbar.update(1)
-                    # pbar.set_postfix(reward=reward)
         print(task_name)
         metric = env.get_musical_metrics()
         precision = metric['precision']
@@ -251,11 +230,10 @@ def main(args: Args) -> None:
         precisions.append(precision)
         recalls.append(recall)
         f1s.append(f1)
-        # print(metric)
 
     print("Precision: {}".format(precision))
     print("Recall: {}".format(recall))
     print("F1: {}".format(f1))
 
 if __name__ == '__main__':
-    main(tyro.cli(Args, description=__doc__))
+    main()

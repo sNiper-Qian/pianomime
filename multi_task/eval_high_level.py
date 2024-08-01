@@ -17,12 +17,7 @@ from diffusers.training_utils import EMAModel
 from diffusers.optimization import get_scheduler
 from tqdm.auto import tqdm
 from dataset import RoboPianistDataset, read_dataset, normalize_data, unnormalize_data, read_dataset_split
-import sys
-import time
-import wandb
 import goal_auto_encoder.network
-from handtracking.utils import draw_point_on_image, preprocess_frame
-import cv2
 import network
 from utils import get_env_hl, get_diffusion_obs, get_flattend_obs, get_goal_only_obs, adjust_ft_fingering
 import os
@@ -41,8 +36,8 @@ if __name__ == '__main__':
     midi_dim = 212
 
     noise = 0.01
-    write_video = False # Plot the fingertip trajectory on the video
-    num_seeds = 5
+    num_seeds = 1
+    task_name = sys.argv[1]
 
 
     for seed in range(num_seeds):
@@ -61,7 +56,7 @@ if __name__ == '__main__':
                                 dataset_path=dataset_path,
                                 normalization=True)
 
-        ae = vae.network.Autoencoder(
+        ae = goal_auto_encoder.network.Autoencoder(
             latent_dim=16,
             cond_dim=64,
         ).to('cuda')
@@ -118,11 +113,7 @@ if __name__ == '__main__':
         num_songs = 1
         losses = []
         for i in range(num_songs):
-            task_name = "NoTimeToDie_{}".format(i+1)
             print(task_name)
-
-            # Load homography matrix
-            H = np.load('handtracking/H_matrices/PianoX.npy')
 
             env, max_steps = get_env_hl(task_name, lookahead=10)
             trajectory_lh = np.zeros((max_steps, 3, 6))
@@ -134,9 +125,6 @@ if __name__ == '__main__':
             lh_current, rh_current = env.task.get_fingertip_pos(env.physics)
             last_fingertip_pos = np.concatenate((lh_current, rh_current), axis=0).flatten()     
 
-            last_timestamp = float('-inf') # Let the first frame be processed -inf
-            timestamp = 0
-            first_timestamp = None
             step = 0
             B = 1
             loss_ft = 0
@@ -205,6 +193,7 @@ if __name__ == '__main__':
                     goal = timestep.observation['goal'][:88]
                     keys = np.nonzero(goal)
 
+                    # Adjust trajectory to align with the training data
                     lh_ft, rh_ft, fingering = adjust_ft_fingering(env, keys, 
                                                                 nft[0][:18].reshape(6, 3).T,
                                                                 nft[0][18:].reshape(6, 3).T,
@@ -220,10 +209,10 @@ if __name__ == '__main__':
                     last_fingertip_pos = ft
                     step += 1
                     timestep = env.step(np.zeros(47))
-                    # trajectory.append(cont)
                     pbar.update(1)
-            # trajectory = np.array(trajectory)
 
+            if not os.path.exists("pianomime/multi_task/trajectories"):
+                os.makedirs("pianomime/multi_task/trajectories")
             # Save the trajectory
             np.save("pianomime/multi_task/trajectories/{}_trajectory.npy".format(task_name), trajectory)
             np.save("pianomime/multi_task/trajectories/{}_left_hand_action_list.npy".format(task_name), trajectory_lh)

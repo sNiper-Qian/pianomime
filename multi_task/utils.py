@@ -360,8 +360,12 @@ def get_env_hl(task_name, record_dir=None, lookahead = 3, use_fingering_emb=Fals
                 use_midi=False):
     # start_from = start_from_dict.START_FROM[task_name]
     if not use_midi:
-        with open('dataset/notes/{}.pkl'.format(task_name), 'rb') as f:
-            note_traj = pickle.load(f)
+        try:
+            with open('dataset/notes/{}.pkl'.format(task_name), 'rb') as f:
+                note_traj = pickle.load(f)
+        except:
+            with open('dataset/notes_test/{}.pkl'.format(task_name), 'rb') as f:
+                note_traj = pickle.load(f)
         notes = note_traj.notes        
         length = len(notes)
         trim = False if length >=600 or length < 500 else True
@@ -430,20 +434,22 @@ def get_env_ll(task_name, enable_ik = True, record_dir=None, lookahead = 3, exte
             external_fingering=None, use_midi=False):
     # start_from = start_from_dict.START_FROM[task_name]
     if not use_midi:
-        with open('dataset/notes/{}.pkl'.format(task_name), 'rb') as f:
-            note_traj = pickle.load(f)
+        try:
+            with open('dataset/notes/{}.pkl'.format(task_name), 'rb') as f:
+                note_traj = pickle.load(f)
+        except:
+            with open('dataset/notes_test/{}.pkl'.format(task_name), 'rb') as f:
+                note_traj = pickle.load(f)
 
     # Load hand action trajectory
-    left_hand_action_list = np.load('dataset/high_level_trajectories/{}_left_hand_action_list.npy'.format(task_name))
-    right_hand_action_list = np.load('dataset/high_level_trajectories/{}_right_hand_action_list.npy'.format(task_name))
+    left_hand_action_list = np.load('pianomime/multi_task/trajectories/{}_left_hand_action_list.npy'.format(task_name))
+    right_hand_action_list = np.load('pianomime/multi_task/trajectories/{}_right_hand_action_list.npy'.format(task_name))
             
     length = left_hand_action_list.shape[0]
     trim = False if length >=600 or length < 500 else True
 
     if use_midi:
         task = piano_with_shadow_hands_res.PianoWithShadowHandsResidual(
-            # hand_side=HandSide.LEFT,
-            # note_trajectory=note_traj, 
             midi=music.load(task_name),
             change_color_on_activation=True,
             trim_silence=True,
@@ -461,9 +467,7 @@ def get_env_ll(task_name, enable_ik = True, record_dir=None, lookahead = 3, exte
         )
     else:
         task = piano_with_shadow_hands_res.PianoWithShadowHandsResidual(
-            # hand_side=HandSide.LEFT,
             note_trajectory=note_traj,
-            # midi=music.load(task_name),
             change_color_on_activation=True,
             trim_silence=trim,
             control_timestep=0.05,

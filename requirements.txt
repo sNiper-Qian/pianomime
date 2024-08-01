@@ -16,3 +16,4 @@ mujoco-utils==0.0.6
 note-seq==0.0.5
 PyAudio==0.2.14
 pyFluidSynth==1.3.2
+wandb

@@ -5,7 +5,10 @@
 #@markdown - `ConditionalResidualBlock1D` Takes two inputs `x` and `cond`. \
 #@markdown `x` is passed through 2 `Conv1dBlock` stacked together with residual connection.
 #@markdown `cond` is applied to `x` with [FiLM](https://arxiv.org/abs/1709.07871) conditioning.
-
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
 import math
 from typing import Tuple, Sequence, Dict, Union, Optional
 import numpy as np
@@ -19,6 +22,7 @@ from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 from diffusers.training_utils import EMAModel
 from diffusers.optimization import get_scheduler
 from tqdm.auto import tqdm
+import goal_auto_encoder.network
 
 class SinusoidalPosEmb(nn.Module):
     def __init__(self, dim):
