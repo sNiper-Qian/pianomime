@@ -50,8 +50,8 @@ git clone https://github.com/sNiper-Qian/pianomime.git
 ### Step 3: Download the Dataset and Checkpoints
 
 1. Download the dataset from the following link:
-   https://drive.google.com/file/d/15WXesKKqKEQTMUPSJBYyT-PVknIRsPPZ/view?usp=sharing
-
+   https://drive.google.com/file/d/1X8q-PvqyqL2X15wCZevTfAtSDfiHpYAa/view?usp=sharing
+   
 2. Download the checkpoints from the following link:
    https://drive.google.com/file/d/1-wa1UAn_mbPN87D6GIi4PS0VNDE5mbQh/view?usp=sharing
 
