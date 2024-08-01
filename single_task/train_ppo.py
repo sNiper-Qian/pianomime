@@ -1,3 +1,8 @@
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
+print(sys.path)
 from pathlib import Path
 from typing import Optional, Tuple
 import tyro
@@ -27,6 +32,7 @@ from stable_baselines3.common.monitor import Monitor
 
 import pickle
 import shutil
+
 
 @dataclass(frozen=True)
 class Args:
@@ -102,14 +108,14 @@ def main(args: Args) -> None:
     random.seed(args.seed)
     np.random.seed(args.seed)
 
-    wandb.login()
+    # wandb.login()
 
-    wandb.init(
-        project=args.project,
-        config=asdict(args),
-        name=run_name,
-        sync_tensorboard=True,
-    )
+    # wandb.init(
+    #     project=args.project,
+    #     config=asdict(args),
+    #     name=run_name,
+    #     sync_tensorboard=True,
+    # )
     eval_args = copy(args)
     eval_args = replace(eval_args, rsi=False)
     eval_env = get_env(eval_args, record_dir=experiment_dir / "eval")
@@ -117,7 +123,6 @@ def main(args: Args) -> None:
         env = get_env(args)
         return Monitor(env)
     # Parallel environments
-    # vec_env = DummyVecEnv([make_env for _ in range(args.num_envs)])
     vec_env = SubprocVecEnv([make_envs(make_env, i) for i in range(args.num_envs)], start_method="fork")
 
     lr_scheduler_instance = lr_scheduler.LR_Scheduler(initial_lr=args.initial_lr,
@@ -147,9 +152,7 @@ def main(args: Args) -> None:
             model.learn(total_timesteps=args.n_steps*args.num_envs, 
                         progress_bar=True,
                         reset_num_timesteps=False,
-                        callback= WandbCallback(
-                            verbose=2,
-                            log="all"))
+                        callback= None)
             # Evaluation
             obs, _ = eval_env.reset()
             while True:
@@ -159,16 +162,16 @@ def main(args: Args) -> None:
                     break
             log_dict = prefix_dict("eval", eval_env.env.get_statistics())
             music_dict = prefix_dict("eval", eval_env.env.get_musical_metrics())
-            wandb.log(log_dict | music_dict, step=i)
-            if args.deepmimic:
-                wandb.log(prefix_dict("eval", eval_env.env.get_deepmimic_rews()), step=i)
+            # wandb.log(log_dict | music_dict, step=i)
+            # if args.deepmimic:
+                # wandb.log(prefix_dict("eval", eval_env.env.get_deepmimic_rews()), step=i)
             f1 = eval_env.env.get_musical_metrics()["f1"]
             if f1 > best_f1:
                 print("best_f1:{}->{}".format(best_f1, eval_env.env.get_musical_metrics()["f1"]))
                 best_f1 = eval_env.env.get_musical_metrics()["f1"]
                 model.save("./robopianist_rl/ckpts/{}_best".format(run_name))
-                video = wandb.Video(str(eval_env.env.latest_filename), fps=4, format="mp4")
-                wandb.log({"video": video, "global_step": i})
+                # video = wandb.Video(str(eval_env.env.latest_filename), fps=4, format="mp4")
+                # wandb.log({"video": video, "global_step": i})
             
             eval_env.env.latest_filename.unlink()  
     except KeyboardInterrupt:
@@ -181,10 +184,10 @@ def main(args: Args) -> None:
     os.makedirs("./trained_songs", exist_ok=True)
     os.makedirs("./trained_songs/{}".format(args.mimic_task), exist_ok=True)
     left_hand_action_list = np.load(
-    f"handtracking/trajectory/{args.mimic_task}_left_hand_action_list.npy"
+    f"dataset/high_level_trajectories/{args.mimic_task}_left_hand_action_list.npy"
     )
     right_hand_action_list = np.load(
-    f"handtracking/trajectory/{args.mimic_task}_right_hand_action_list.npy"
+    f"dataset/high_level_trajectories/{args.mimic_task}_right_hand_action_list.npy"
     )
     np.save("./trained_songs/{}/left_hand_action_list".format(args.mimic_task), left_hand_action_list)
     np.save("./trained_songs/{}/right_hand_action_list".format(args.mimic_task), right_hand_action_list)

@@ -31,13 +31,13 @@ from stable_baselines3.common.utils import set_random_seed
 
 def get_env_no_residual(args, record_dir: Optional[Path] = None):
     left_hand_action_list = np.load(
-        f"handtracking/trajectory/{args.mimic_task}_left_hand_action_list.npy"
+        f"dataset/high_level_trajectories/{args.mimic_task}_left_hand_action_list.npy"
     )
     right_hand_action_list = np.load(
-        f"handtracking/trajectory/{args.mimic_task}_right_hand_action_list.npy"
+        f"dataset/high_level_trajectories/{args.mimic_task}_right_hand_action_list.npy"
     )
     if args.use_note_trajectory:
-        with open(f"handtracking/notes/{args.mimic_task}.pkl", "rb") as f:
+        with open(f"dataset/notes/{args.mimic_task}.pkl", "rb") as f:
             note_traj = pickle.load(f)
             task = piano_with_shadow_hands.PianoWithShadowHands(
                 note_trajectory=note_traj,
@@ -112,16 +112,16 @@ def get_env_no_residual(args, record_dir: Optional[Path] = None):
 
 def get_env(args, record_dir: Optional[Path] = None):
     left_hand_action_list = np.load(
-        f"handtracking/trajectory/{args.mimic_task}_left_hand_action_list.npy"
+        f"dataset/high_level_trajectories/{args.mimic_task}_left_hand_action_list.npy"
     )
     right_hand_action_list = np.load(
-        f"handtracking/trajectory/{args.mimic_task}_right_hand_action_list.npy"
+        f"dataset/high_level_trajectories/{args.mimic_task}_right_hand_action_list.npy"
     )
     length = left_hand_action_list.shape[0]
     trim = False if length >=600 or length < 500 else True
     print(trim)
     if args.use_note_trajectory:
-        with open(f"handtracking/notes/{args.mimic_task}.pkl", "rb") as f:
+        with open(f"dataset/notes/{args.mimic_task}.pkl", "rb") as f:
             note_traj = pickle.load(f)
             task = piano_with_shadow_hands_res.PianoWithShadowHandsResidual(
                 note_trajectory=note_traj,

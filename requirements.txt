@@ -1,14 +1,18 @@
 diffusers==0.11.1
-torch==2.0.1+cu118 
-torchvision==0.15.2+cu118 
-torchaudio==2.0.2 
---extra-index-url  https://download.pytorch.org/whl/cu118
+# torch==2.0.1+cu118 
+# torchvision==0.15.2+cu118 
+# torchaudio==2.0.2 
+# --extra-index-url  https://download.pytorch.org/whl/cu118
 zarr==2.16.1
 diffusers==0.11.1
 tyro==0.5.12
-dm_env_wrappers==0.013
+dm_env_wrappers==0.0.13
 quadprog==0.1.11
 gymnasium==0.29.1
 stable_baselines3==2.1.0
 qpsolvers==4.0.1
-
+mujoco==3.0.0
+mujoco-utils==0.0.6
+note-seq==0.0.5
+PyAudio==0.2.14
+pyFluidSynth==1.3.2
