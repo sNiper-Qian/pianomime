@@ -66,7 +66,7 @@ if __name__ == '__main__':
             cond_dim=64,
         ).to('cuda')
 
-        ckpt_path = "ckpts/checkpoint_ae.ckpt"
+        ckpt_path = "checkpoint_ae.ckpt"
         state_dict = torch.load(ckpt_path, map_location='cuda')
         ae.load_state_dict(state_dict)
         encoder = ae.encoder
@@ -90,7 +90,7 @@ if __name__ == '__main__':
             midi_encoder=create_midi_encoder,
         ).to(device)
 
-        ckpt_path = "checkpoints/checkpoint_high_level.ckpt"
+        ckpt_path = "checkpoint_high_level.ckpt"
         state_dict = torch.load(ckpt_path, map_location='cuda')
         ema_noise_pred_net = noise_pred_net
         ema_noise_pred_net.load_state_dict(state_dict)

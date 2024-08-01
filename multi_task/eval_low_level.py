@@ -76,7 +76,7 @@ def main(args: Args) -> None:
         cond_dim=64,
         ).to('cuda')
 
-    ckpt_path = "ckpts/checkpoint_ae.ckpt"
+    ckpt_path = "checkpoint_ae.ckpt"
     state_dict = torch.load(ckpt_path, map_location='cuda')
     ae.load_state_dict(state_dict)
     encoder = ae.encoder
@@ -101,7 +101,7 @@ def main(args: Args) -> None:
         freeze_encoder=False,
     ).to(device)
 
-    ckpt_path = "ckpts/checkpoint_low_level.ckpt"
+    ckpt_path = "checkpoint_low_level.ckpt"
 
     state_dict = torch.load(ckpt_path, map_location='cuda')
     ema_noise_pred_net = noise_pred_net
@@ -119,8 +119,8 @@ def main(args: Args) -> None:
     for i in range(1):
         task_name = "NoTimeToDie_1"
 
-        left_hand_action_list = np.load('diffusion/trajectories/{}_left_hand_action_list.npy'.format(task_name))
-        fingering = np.load('diffusion/trajectories/{}_fingerings.npy'.format(task_name))
+        left_hand_action_list = np.load('dataset/high_level_trajectories/{}_left_hand_action_list.npy'.format(task_name))
+        fingering = np.load('dataset/high_level_trajectories/{}_fingerings.npy'.format(task_name))
         max_steps = left_hand_action_list.shape[0] 
         env = get_env_ll(task_name=task_name, enable_ik=False, lookahead = 10, 
                         record_dir=experiment_dir / "eval", use_fingering_emb=True, 
