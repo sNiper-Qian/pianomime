@@ -1,3 +1,7 @@
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
 from network import ConditionalUnet1D, EMAModel, ConvEncoder, VariationalConvMlpEncoder
 import torch
 import math
@@ -14,10 +18,8 @@ from diffusers.optimization import get_scheduler
 from tqdm.auto import tqdm
 from dataset import RoboPianistDataset, read_dataset
 import sys
-from torchviz import make_dot
 import time
 import wandb
-import vae.network
 import sys
 
 if __name__ == '__main__':
@@ -94,14 +96,14 @@ if __name__ == '__main__':
         # our network predicts noise (instead of denoised action)
         prediction_type='epsilon'
     )
-    wandb.login()
+    # wandb.login()
     run_name = f"DF-HL-{dataset_path.split('.')[0]}"
-    wandb.init(
-        project="robopianist",
-        name=run_name,
-        config={},
-        sync_tensorboard=True,
-    )
+    # wandb.init(
+    #     project="robopianist",
+    #     name=run_name,
+    #     config={},
+    #     sync_tensorboard=True,
+    # )
 
     with tqdm(range(num_epochs), desc='Epoch') as tglobal:
         # epoch loop
@@ -167,9 +169,9 @@ if __name__ == '__main__':
                     epoch_loss.append(loss_cpu)
                     tepoch.set_postfix(loss=loss_cpu)
             tglobal.set_postfix(loss=np.mean(epoch_loss))
-            wandb.log({"loss": np.mean(epoch_loss)})
-            wandb.log({"learning rate": lr_scheduler.get_last_lr()[0]})
-            wandb.log({"epoch": epoch_idx})
+            # wandb.log({"loss": np.mean(epoch_loss)})
+            # wandb.log({"learning rate": lr_scheduler.get_last_lr()[0]})
+            # wandb.log({"epoch": epoch_idx})
             if epoch_idx % 400 == 0:
                 # Weights of the EMA model
                 # is used for inference

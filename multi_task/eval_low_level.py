@@ -1,3 +1,7 @@
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
 from robopianist import suite
 import dm_env_wrappers as wrappers
 import robopianist.wrappers as robopianist_wrappers
@@ -22,7 +26,6 @@ from diffusers.training_utils import EMAModel
 from diffusers.optimization import get_scheduler
 
 from network import ConditionalUnet1D, VariationalConvMlpEncoder, ConvEncoder
-import vae.network
 from dataset import normalize_data, read_dataset, unnormalize_data
 from utils import get_diffusion_obs, Args, get_env_ll, get_flattend_obs
 
@@ -38,17 +41,6 @@ def play_video(filename: str):
   """
         % data_url
     )
-
-def replace_obs(obs, hl_command):
-    obs_replace = obs[:248].reshape(4, -1)
-    # print(obs_replace[0, 16:])
-    # print(hl_command.reshape(4, -1)[0, 16:])
-    obs_replace[:, 16:] = hl_command.reshape(4, -1)[:, 16:]
-    # obs_replace[:, 26:] = hl_command.reshape(4, -1)[:, 26:]
-    obs[:248] = obs_replace.flatten()
-    # Add noise to the first 248 elements
-    # obs[64:248] += np.random.normal(0, 0.0001, 184)
-    return obs
 
 def main(args: Args) -> None:
     pred_horizon = 4
@@ -68,7 +60,7 @@ def main(args: Args) -> None:
     recalls = []
     f1s = []
 
-    dataset_path = "dataset_h3_ll.zarr"
+    dataset_path = "pianomime/dataset_ll.zarr"
     dataloader, stats = read_dataset(pred_horizon=pred_horizon,
                             obs_horizon=obs_horizon,
                             action_horizon=action_horizon,
@@ -84,7 +76,7 @@ def main(args: Args) -> None:
         cond_dim=64,
         ).to('cuda')
 
-    ckpt_path = "vae/ckpts/checkpoint_AE-dataset_h0_midi_large-1707164820.8369377.ckpt"
+    ckpt_path = "ckpts/checkpoint_ae.ckpt"
     state_dict = torch.load(ckpt_path, map_location='cuda')
     ae.load_state_dict(state_dict)
     encoder = ae.encoder
@@ -109,14 +101,8 @@ def main(args: Args) -> None:
         freeze_encoder=False,
     ).to(device)
 
-    # ckpt_path = "diffusion/ckpts/checkpoint_DF-LL-dataset_h3_low_level_cont_v2-1709496683.714291.ckpt"
-    # ckpt_path = "diffusion/ckpts/checkpoint_DF-LL-dataset_h3_low_level_cont_tendon_res-1710935698.0606441.ckpt"
-    if ll_model_num_songs is None:
-        ckpt_path = "diffusion/ckpts/checkpoint_DF-LL-dataset_h3_low_level_cont_tendon_v2_without_fingering_1100.ckpt"
-    else:
-        ckpt_path = "diffusion/ckpts/checkpoint_DF-LL-dataset_h3_low_level_cont_tendon_res_num_{}_seed_{}.ckpt".format(ll_model_num_songs, seed)
-    # ckpt_path = "diffusion/ckpts/checkpoint_DF-LL-dataset_h3_low_level_cont-1707239779.8681304.ckpt"
-    # ckpt_path = "diffusion/ckpts/checkpoint_DF-LL-dataset_h3_low_level_cont_tendon_num_20_seed_0-1710784171.425198.ckpt"
+    ckpt_path = "ckpts/checkpoint_low_level.ckpt"
+
     state_dict = torch.load(ckpt_path, map_location='cuda')
     ema_noise_pred_net = noise_pred_net
     ema_noise_pred_net.load_state_dict(state_dict)
@@ -132,8 +118,7 @@ def main(args: Args) -> None:
 
     for i in range(1):
         task_name = "NoTimeToDie_1"
-        # traj = np.load('diffusion/trajectories/{}_trajectory_num_{}.npy'.format(task_name, hl_model_num_songs))
-        # task_name = task_names[i]
+
         left_hand_action_list = np.load('diffusion/trajectories/{}_left_hand_action_list.npy'.format(task_name))
         fingering = np.load('diffusion/trajectories/{}_fingerings.npy'.format(task_name))
         max_steps = left_hand_action_list.shape[0] 
@@ -155,13 +140,6 @@ def main(args: Args) -> None:
                                 concatenate_keys=['goal', 'demo']
                                 )
         
-        # hl_command = traj[step_idx].flatten()
-        # print(obs[0:248].reshape(4, -1)[1])
-        # obs = replace_obs(obs, hl_command)
-        # print(obs[0:248].reshape(4, -1)[1])
-
-        # keep a queue of last 2 steps of observations
-        # obs[64:248] += np.random.normal(0, 0.0001, 184)
         obs_deque = collections.deque(
             [obs] * obs_horizon, maxlen=obs_horizon)
 
@@ -244,8 +222,7 @@ def main(args: Args) -> None:
                     demo_rh = demo_rh[:18]
                     demo = np.concatenate((demo_lh, demo_rh), axis=0).flatten()
                     # print("Time taken for one step: ", t_end-t_start)
-                    # timestep = env.step(np.append(action[i], 0))
-                    # timestep = env.step(np.zeros(47))
+
                     timestep = env.step(np.append(action[i], 0))
                     if timestep.last():
                         break
@@ -267,7 +244,6 @@ def main(args: Args) -> None:
                     pbar.update(1)
                     # pbar.set_postfix(reward=reward)
         print(task_name)
-        print(seed)
         metric = env.get_musical_metrics()
         precision = metric['precision']
         recall = metric['recall']

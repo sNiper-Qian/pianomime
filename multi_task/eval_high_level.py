@@ -1,3 +1,7 @@
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
 from network import ConditionalUnet1D, EMAModel, ConvEncoder, VariationalConvMlpEncoder
 import torch
 import math
@@ -16,7 +20,7 @@ from dataset import RoboPianistDataset, read_dataset, normalize_data, unnormaliz
 import sys
 import time
 import wandb
-import vae.network
+import goal_auto_encoder.network
 from handtracking.utils import draw_point_on_image, preprocess_frame
 import cv2
 import network
@@ -46,7 +50,7 @@ if __name__ == '__main__':
         torch.manual_seed(seed)
         np.random.seed(seed)
 
-        dataset_path = "/root/pianomime/pianomime/dataset_hl.zarr"
+        dataset_path = "pianomime/dataset_hl.zarr"
 
         device = torch.device('cuda')
 
@@ -62,7 +66,7 @@ if __name__ == '__main__':
             cond_dim=64,
         ).to('cuda')
 
-        ckpt_path = "vae/ckpts/checkpoint_AE-dataset_h0_midi_large-1707164820.8369377.ckpt"
+        ckpt_path = "ckpts/checkpoint_ae.ckpt"
         state_dict = torch.load(ckpt_path, map_location='cuda')
         ae.load_state_dict(state_dict)
         encoder = ae.encoder
@@ -86,7 +90,7 @@ if __name__ == '__main__':
             midi_encoder=create_midi_encoder,
         ).to(device)
 
-        ckpt_path = "diffusion/ckpts/checkpoint_DF-HL-dataset_h10_h3_high_level_plan_fingering_v3_without_fingering.ckpt"
+        ckpt_path = "checkpoints/checkpoint_high_level.ckpt"
         state_dict = torch.load(ckpt_path, map_location='cuda')
         ema_noise_pred_net = noise_pred_net
         ema_noise_pred_net.load_state_dict(state_dict)
@@ -116,8 +120,6 @@ if __name__ == '__main__':
         for i in range(num_songs):
             task_name = "NoTimeToDie_{}".format(i+1)
             print(task_name)
-            # left_hand_action_list = np.load('handtracking/trajectory/{}_left_hand_action_list.npy'.format(task_name))
-            # max_steps = left_hand_action_list.shape[0] 
 
             # Load homography matrix
             H = np.load('handtracking/H_matrices/PianoX.npy')
@@ -223,9 +225,8 @@ if __name__ == '__main__':
             # trajectory = np.array(trajectory)
 
             # Save the trajectory
-            np.save("diffusion/trajectories/{}_trajectory.npy".format(task_name), trajectory)
-            np.save("diffusion/trajectories/{}_left_hand_action_list.npy".format(task_name), trajectory_lh)
-            np.save("diffusion/trajectories/{}_right_hand_action_list.npy".format(task_name), trajectory_rh)
+            np.save("pianomime/multi_task/trajectories/{}_trajectory.npy".format(task_name), trajectory)
+            np.save("pianomime/multi_task/trajectories/{}_left_hand_action_list.npy".format(task_name), trajectory_lh)
+            np.save("pianomime/multi_task/trajectories/{}_right_hand_action_list.npy".format(task_name), trajectory_rh)
 
             # Release the VideoCapture and VideoWriter objects
-    print("Average loss: ", np.mean(losses))

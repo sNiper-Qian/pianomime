@@ -1,3 +1,7 @@
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
 from diffusion_policy.policy.bet_lowdim_policy import BETLowdimPolicy
 from diffusion_policy.model.bet.action_ae.discretizers.k_means import KMeansDiscretizer
 from diffusion_policy.model.bet.latent_generators.mingpt import MinGPT

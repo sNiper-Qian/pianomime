@@ -1,3 +1,7 @@
+import sys
+directory = 'pianomime'
+if directory not in sys.path:
+    sys.path.append(directory)
 from network import ConditionalUnet1D, EMAModel, ConvEncoder, VariationalConvMlpEncoder
 import torch
 import math
@@ -17,7 +21,6 @@ import sys
 from torchviz import make_dot
 import time
 import wandb
-import vae.network
 import sys
 
 if __name__ == '__main__':
@@ -97,15 +100,14 @@ if __name__ == '__main__':
         # our network predicts noise (instead of denoised action)
         prediction_type='epsilon'
     )
-    wandb.login()
-    # run_name = f"DF-HL-{dataset_path.split('.')[0]}-{time.time()}"
+    # wandb.login()
     run_name = f"DF-LL-{dataset_path.split('.')[0]}"
-    wandb.init(
-        project="robopianist",
-        name=run_name,
-        config={},
-        sync_tensorboard=True,
-    )
+    # wandb.init(
+    #     project="robopianist",
+    #     name=run_name,
+    #     config={},
+    #     sync_tensorboard=True,
+    # )
 
     with tqdm(range(num_epochs), desc='Epoch') as tglobal:
         # epoch loop
@@ -166,9 +168,9 @@ if __name__ == '__main__':
                     epoch_loss.append(loss_cpu)
                     tepoch.set_postfix(loss=loss_cpu)
             tglobal.set_postfix(loss=np.mean(epoch_loss))
-            wandb.log({"loss": np.mean(epoch_loss)})
-            wandb.log({"learning rate": lr_scheduler.get_last_lr()[0]})
-            wandb.log({"epoch": epoch_idx})
+            # wandb.log({"loss": np.mean(epoch_loss)})
+            # wandb.log({"learning rate": lr_scheduler.get_last_lr()[0]})
+            # wandb.log({"epoch": epoch_idx})
             if epoch_idx % 100 == 0:
                 # Weights of the EMA model
                 # is used for inference
@@ -178,7 +180,6 @@ if __name__ == '__main__':
                 ema_model_state_dict = ema_noise_pred_net.state_dict()
 
                 # Specify the path to save the EMA model's weights
-                # ema_model_weights_path = 'diffusion/ckpts/checkpoint_{}_{}.ckpt'.format(run_name, epoch_idx)
                 ema_model_weights_path = 'diffusion/ckpts/checkpoint_{}.ckpt'.format(run_name)
 
                 # Save the EMA model's weights to the specified path

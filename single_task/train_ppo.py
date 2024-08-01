@@ -2,7 +2,6 @@ import sys
 directory = 'pianomime'
 if directory not in sys.path:
     sys.path.append(directory)
-print(sys.path)
 from pathlib import Path
 from typing import Optional, Tuple
 import tyro
