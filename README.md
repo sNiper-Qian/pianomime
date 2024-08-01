@@ -51,15 +51,19 @@ git clone https://github.com/sNiper-Qian/pianomime.git
 
 1. Download the dataset from the following link:
    https://drive.google.com/file/d/1X8q-PvqyqL2X15wCZevTfAtSDfiHpYAa/view?usp=sharing
-   
+
 2. Download the checkpoints from the following link:
    https://drive.google.com/file/d/1-wa1UAn_mbPN87D6GIi4PS0VNDE5mbQh/view?usp=sharing
 
 ## Acknowledgements
 
-The simulation environment is based on RoboPianist ([https://github.com/google-research/robopianist](https://github.com/google-research/robopianist))  
-The diffusion policy is adapted from Diffusion Policy ([https://github.com/real-stanford/diffusion_policy](https://github.com/real-stanford/diffusion_policy))  
-The inverse-kinematics controller is adapted from Pink ([https://github.com/stephane-caron/pink](https://github.com/stephane-caron/pink))
+The simulation environment is based on RoboPianist [RoboPianist](https://github.com/google-research/robopianist)  
+
+The diffusion policy is adapted from [Diffusion Policy](https://github.com/real-stanford/diffusion_policy)
+
+The inverse-kinematics controller is adapted from [Pink](https://github.com/stephane-caron/pink)
+
+The human demonstration videos are downloaded from YouTube channel [PianoX](https://www.youtube.com/channel/UCsR6ZEA0AbBhrF-NCeET6vQ)
 
 ## License
 
