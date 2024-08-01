@@ -43,7 +43,7 @@ def play_video(filename: str):
     </video>
     """ % data_url)
 
-task_name = "NeverGonnaGiveYouUp_1"
+task_name = sys.argv[1]
 
 # start_from = start_from_dict.START_FROM[task_name]
 with open('dataset/notes/{}.pkl'.format(task_name), 'rb') as f:

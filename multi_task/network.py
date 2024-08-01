@@ -19,7 +19,6 @@ from diffusers.schedulers.scheduling_ddpm import DDPMScheduler
 from diffusers.training_utils import EMAModel
 from diffusers.optimization import get_scheduler
 from tqdm.auto import tqdm
-import vae.network
 
 class SinusoidalPosEmb(nn.Module):
     def __init__(self, dim):
