@@ -30,6 +30,7 @@ from dm_control.mujoco.wrapper import mjbindings
 import os
 from collections import namedtuple
 import time
+import tqdm
 import pickle
 
 mjlib = mjbindings.mjlib
@@ -108,11 +109,15 @@ demos = []
 env = env.env
 timestep = env.reset()
 reward = 0
-while not timestep.last():
+# Use tqdm for progress bar
+timesteps = tqdm.tqdm(range(actions.shape[0]))
+for step in timesteps:
     action = actions[step]
     timestep = env.step(action)
-    step += 1
     reward += timestep.reward
+    timesteps.set_description(f"Reward: {reward:.2f}")
+    if timestep.last():
+        break
 
 print(env.get_musical_metrics())
 
