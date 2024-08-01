@@ -16,9 +16,9 @@ Follow the steps below to set up the PianoMime.
 ### Step 1: Clone the Repository
 Start by cloning the repository:
     
-    ```sh
-    git clone https://github.com/sNiper-Qian/pianomime.git
-    ```
+```sh
+git clone https://github.com/sNiper-Qian/pianomime.git
+```
 
 ### Step 2: Install Dependencies
 
