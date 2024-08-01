@@ -1,20 +1,26 @@
 # PianoMime: Learning a Generalist, Dexterous Piano Player from Internet Demonstrations
 We train a generalist policy for controlling dexterous robot hands to play any songs,
 using human pianist demonstration videos from internet. We use residual reinforcement learning to learn song-specific policies from demonstrations, and a two-stage diffusion policy to generalize to new songs.
-[![Video](https://i.ytimg.com/vi/LW0AiBIcnL0/hqdefault.jpg)](https://youtu.be/LW0AiBIcnL0)
 
-## Installation and Setup
+[![Video](https://i.ytimg.com/vi/LW0AiBIcnL0/hqdefault.jpg)](https://youtu.be/LW0AiBIcnL0)
 
 ## Getting Started
 
 We have a tutorial on Google Colab:
-[Colab Notebook](https://drive.google.com/file/d/15WXesKKqKEQTMUPSJBYyT-PVknIRsPPZ/view?usp=sharing)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Rv1XGPA0a4x3a_M6yXc7uiwKnmmIu95o?usp=sharing)
 
 ## Installation and Setup
 
 Follow the steps below to set up the PianoMime.
 
-### Step 1: Install Dependencies
+### Step 1: Clone the Repository
+Start by cloning the repository:
+    
+    ```sh
+    git clone https://github.com/sNiper-Qian/pianomime.git
+    ```
+
+### Step 2: Install Dependencies
 
 1. Open a terminal and run the following command to install the necessary libraries:
 
@@ -41,7 +47,7 @@ Follow the steps below to set up the PianoMime.
     pip install -U "jaxlib==0.4.23+cuda12.cudnn89" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
     ```
 
-### Step 2: Download the Dataset and Checkpoints
+### Step 3: Download the Dataset and Checkpoints
 
 1. Download the dataset from the following link:
    https://drive.google.com/file/d/15WXesKKqKEQTMUPSJBYyT-PVknIRsPPZ/view?usp=sharing
