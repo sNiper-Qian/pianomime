@@ -28,7 +28,7 @@ git clone https://github.com/sNiper-Qian/pianomime.git
     sudo apt install libasound2-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg
     ```
 
-2. Run the following script to install additional dependencies:
+2. Run the following script to install additional dependencies for RoboPianist:
 
     ```sh
     bash pianomime/scripts/install_deps.sh
