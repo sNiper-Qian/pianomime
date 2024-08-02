@@ -55,6 +55,22 @@ git clone https://github.com/sNiper-Qian/pianomime.git
 2. Download the checkpoints from the following link:
    https://drive.google.com/file/d/1-wa1UAn_mbPN87D6GIi4PS0VNDE5mbQh/view?usp=sharing
 
+## Citation
+
+Please use the following citation:
+
+```bibtex
+@misc{qian2024pianomimelearninggeneralistdexterous,
+      title={PianoMime: Learning a Generalist, Dexterous Piano Player from Internet Demonstrations}, 
+      author={Cheng Qian and Julen Urain and Kevin Zakka and Jan Peters},
+      year={2024},
+      eprint={2407.18178},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2407.18178}, 
+}
+```
+
 ## Acknowledgements
 
 The simulation environment is based on RoboPianist [RoboPianist](https://github.com/google-research/robopianist)  
