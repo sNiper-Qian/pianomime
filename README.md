@@ -1,4 +1,16 @@
 # PianoMime: Learning a Generalist, Dexterous Piano Player from Internet Demonstrations
+[[Project page]](https://pianomime.github.io/)
+[[Paper]](https://arxiv.org/pdf/2407.18178)
+[[Arxiv]](https://arxiv.org/abs/2407.18178)
+[[Colab]](https://colab.research.google.com/drive/1Rv1XGPA0a4x3a_M6yXc7uiwKnmmIu95o?usp=sharing)
+
+**Cheng Qian**<sup>1</sup>, **Julen Urain**<sup>2</sup>, **Kevin Zakka**<sup>3</sup>, **Jan Peters**<sup>2</sup>
+
+<sup>1</sup>TU Munich, 
+<sup>2</sup>TU Darmsadt, 
+<sup>3</sup>UC Berkeley
+
+TLDR:
 We train a generalist policy for controlling dexterous robot hands to play any songs,
 using human pianist demonstration videos from internet. We use residual reinforcement learning to learn song-specific policies from demonstrations, and a two-stage diffusion policy to generalize to new songs.
 
