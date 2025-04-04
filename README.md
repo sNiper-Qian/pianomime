@@ -15,6 +15,17 @@ We train a generalist policy for controlling dexterous robot hands to play any s
 using human pianist demonstration videos from internet. We use residual reinforcement learning to learn song-specific policies from demonstrations, and a two-stage diffusion policy to generalize to new songs.
 
 [![Video](https://i.ytimg.com/vi/LW0AiBIcnL0/hqdefault.jpg)](https://youtu.be/LW0AiBIcnL0)
+## 🚨 News: Dataset Preparation Tutorial Released!
+
+We're thrilled to announce that we've just published a **Tutorial** that walks you through the entire process of preparing your dataset from videos and MIDI files! 🎹🎥
+
+### 📍 Where to find it:
+[📓 `tutorial/data_preprocessing.ipynb`](tutorial/data_preprocessing.ipynb)
+
+Inside the notebook, you'll learn how to:
+- Estimate homography matrix from video coordinates to real piano coordinates
+- Extract fingering and human fingertip trajectories from videos
+- Format your data for training
 
 ## Getting Started
 
@@ -67,6 +78,13 @@ git clone https://github.com/sNiper-Qian/pianomime.git
 2. Download the checkpoints from the following link:
    https://drive.google.com/file/d/1-wa1UAn_mbPN87D6GIi4PS0VNDE5mbQh/view?usp=sharing
 
+## Dataset Preparation
+We also provide a tutorial for generate dataset from videos and MIDI files.
+
+You can find the step-by-step guide here:
+[Data Preparation Tutorial](tutorial/data_preprocessing.ipynb)
+
+This notebook will walk you through the process of converting your video and MIDI data into a structured dataset, ready for training.
 ## Citation
 
 Please use the following citation:
